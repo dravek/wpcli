@@ -12,27 +12,43 @@ if (isset($argc)) {
     if (isset($argv[1]) && $argv[1] == '-d' && isset($argv[2])) {
         switch ($argv[2]) {
             case 'archivedprograms':
-                echo "\n\ndelete ARCHIVED Programs\n\n";
+                echo "\n\nDeleting ARCHIVED Programs...\n";
                 delete_archived_programs();
                 cli_heading('All archived programs deleted');
                 break;
             case 'activeprograms':
-                echo "\n\ndelete ACTIVE Programs\n\n";
+                echo "\n\nDeleting ACTIVE Programs...\n";
                 delete_active_programs();
                 cli_heading('All active programs deleted');
                 break;
             case 'allprograms':
-                echo "\n\ndelete ALL Programs\n\n";
+                echo "\n\nDeleting ALL Programs...\n";
                 delete_archived_programs();
                 delete_active_programs();
                 cli_heading('All programs deleted');
+                break;
+            case 'imports':
+                echo "\n\nDeleting ALL imports...\n";
+                $imports = \tool_wp\local\exportimport\import_persistent::get_records();
+                foreach ($imports as $import) {
+                    \tool_wp\local\exportimport\helper::delete_import($import->get('id'));
+                }
+                cli_heading('All imports deleted');
+                break;
+            case 'exports':
+                echo "\n\nDeleting ALL exports...\n";
+                $exports = \tool_wp\local\exportimport\export_persistent::get_records();
+                foreach ($exports as $export) {
+                    \tool_wp\local\exportimport\helper::delete_export($export->get('id'));
+                }
+                cli_heading('All exports deleted');
                 break;
             default:
                 echo "\n\nMissing delete instance\n\n";
                 break;
 
         }
-    } if (isset($argv[1]) && $argv[1] == '-h') {
+    } else if (isset($argv[1]) && $argv[1] == '-h') {
         echo "\n\n Example: wpcli.php -d allprograms";
         echo "\n\n Parameters:";
         echo "\n -d Delete instances";
@@ -40,6 +56,8 @@ if (isset($argc)) {
         echo "\n allprograms : Deletes all programs";
         echo "\n activeprograms : Deletes all active programs";
         echo "\n archivedprograms : Deletes all archived programs";
+        echo "\n imports : Deletes all imports";
+        echo "\n exports : Deletes all exports";
         echo "\n\n\n";
     } else {
         echo "\n\nInvalid option\n\n";
